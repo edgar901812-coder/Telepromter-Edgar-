@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.Flip
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Speed
@@ -109,7 +110,8 @@ fun TeleprompterScreen(
         showCue: Boolean,
         bgHex: String,
         fgHex: String
-    ) -> Unit
+    ) -> Unit,
+    onSwitchToFloating: () -> Unit
 ) {
     BackHandler { onClose() }
 
@@ -453,11 +455,23 @@ fun TeleprompterScreen(
                             }
                         }
 
+                        // Switch to floating prompter mode
+                        IconButton(
+                            onClick = onSwitchToFloating,
+                            modifier = Modifier.testTag("prompter_switch_to_floating")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.PictureInPictureAlt,
+                                contentDescription = "Modo Flotante",
+                                tint = StudioAmber
+                            )
+                        }
+
                         // Replay to beginning button
                         IconButton(
                             onClick = {
                                 isPlaying = false
-                                scrollState.dispatchRawDelta(-scrollState.value.toFloat())
+                                coroutineScope.launch { scrollState.scrollTo(0) }
                             },
                             modifier = Modifier.testTag("prompter_rewind_to_start")
                         ) {

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -95,6 +96,18 @@ fun ScriptEditorScreen(
         textColorHex: String
     ) -> Unit,
     onStartPrompter: (
+        title: String,
+        content: String,
+        category: String,
+        fontSize: Float,
+        scrollSpeed: Float,
+        mirrorHorizontal: Boolean,
+        mirrorVertical: Boolean,
+        showCueGuide: Boolean,
+        backgroundColorHex: String,
+        textColorHex: String
+    ) -> Unit,
+    onStartFloating: (
         title: String,
         content: String,
         category: String,
@@ -230,7 +243,7 @@ fun ScriptEditorScreen(
                         ),
                         shape = RoundedCornerShape(10.dp),
                         modifier = Modifier
-                            .padding(end = 8.dp)
+                            .padding(end = 4.dp)
                             .testTag("start_prompter_from_editor_button")
                     ) {
                         Icon(
@@ -240,6 +253,33 @@ fun ScriptEditorScreen(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text("Iniciar", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                    }
+
+                    // Floating Prompter Button
+                    IconButton(
+                        onClick = {
+                            onStartFloating(
+                                title,
+                                content,
+                                category,
+                                fontSize,
+                                scrollSpeed,
+                                mirrorHorizontal,
+                                mirrorVertical,
+                                showCueGuide,
+                                backgroundColorHex,
+                                textColorHex
+                            )
+                        },
+                        modifier = Modifier
+                            .padding(end = 6.dp)
+                            .testTag("start_floating_from_editor_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PictureInPictureAlt,
+                            contentDescription = "Teleprompter Flotante",
+                            tint = StudioAmber
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

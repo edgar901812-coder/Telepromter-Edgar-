@@ -34,6 +34,7 @@ import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Videocam
@@ -97,7 +98,8 @@ fun ScriptListScreen(
     onDuplicateScript: (Script) -> Unit,
     onDeleteScript: (Script) -> Unit,
     onImportClipboard: () -> Unit,
-    onImportUri: (Uri) -> Unit
+    onImportUri: (Uri) -> Unit,
+    onLaunchFloating: (Script) -> Unit
 ) {
     var isSearchVisible by remember { mutableStateOf(false) }
     var scriptToDelete by remember { mutableStateOf<Script?>(null) }
@@ -430,6 +432,7 @@ fun ScriptListScreen(
                         ScriptItemCard(
                             script = script,
                             onPlay = { onPlayScript(script.id) },
+                            onFloating = { onLaunchFloating(script) },
                             onEdit = { onEditScript(script.id) },
                             onDuplicate = { onDuplicateScript(script) },
                             onDelete = { scriptToDelete = script }
@@ -471,6 +474,7 @@ fun ScriptListScreen(
 fun ScriptItemCard(
     script: Script,
     onPlay: () -> Unit,
+    onFloating: () -> Unit,
     onEdit: () -> Unit,
     onDuplicate: () -> Unit,
     onDelete: () -> Unit
@@ -584,28 +588,54 @@ fun ScriptItemCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Primary Action: Start Prompter
-                Button(
-                    onClick = onPlay,
-                    modifier = Modifier.testTag("play_button_${script.id}"),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = ElectricCyan,
-                        contentColor = Color(0xFF00354E)
-                    ),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Iniciar Teleprompter",
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Iniciar Prompter",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
-                    )
+                // Primary Action: Start Prompter Fullscreen & Floating Mode
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = onPlay,
+                        modifier = Modifier.testTag("play_button_${script.id}"),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ElectricCyan,
+                            contentColor = Color(0xFF00354E)
+                        ),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Iniciar Teleprompter",
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Pantalla",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
+                    }
+
+                    // Floating Mode Button
+                    Button(
+                        onClick = onFloating,
+                        modifier = Modifier.testTag("floating_button_${script.id}"),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = StudioSurfaceVariant,
+                            contentColor = StudioAmber
+                        ),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PictureInPictureAlt,
+                            contentDescription = "Modo Flotante",
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Flotante",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
+                    }
                 }
 
                 // Secondary actions

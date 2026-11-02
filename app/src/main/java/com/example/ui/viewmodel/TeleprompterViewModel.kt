@@ -5,7 +5,9 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.net.Uri
+import android.provider.Settings
 import androidx.lifecycle.AndroidViewModel
+import com.example.service.FloatingPrompterService
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.AppDatabase
 import com.example.data.model.Script
@@ -75,12 +77,46 @@ class TeleprompterViewModel(application: Application) : AndroidViewModel(applica
     private val _activeScript = MutableStateFlow<Script?>(null)
     val activeScript: StateFlow<Script?> = _activeScript.asStateFlow()
 
+    // Floating script state (for in-app overlay or system overlay tracking)
+    private val _floatingScript = MutableStateFlow<Script?>(null)
+    val floatingScript: StateFlow<Script?> = _floatingScript.asStateFlow()
+
+    private val _pendingOverlayPermission = MutableStateFlow<Script?>(null)
+    val pendingOverlayPermission: StateFlow<Script?> = _pendingOverlayPermission.asStateFlow()
+
     // Notification toast / snackbar
     private val _notification = MutableStateFlow<UiNotification?>(null)
     val notification: StateFlow<UiNotification?> = _notification.asStateFlow()
 
     fun dismissNotification() {
         _notification.value = null
+    }
+
+    fun dismissOverlayPermissionDialog() {
+        _pendingOverlayPermission.value = null
+    }
+
+    fun startFloatingPrompter(context: Context, script: Script) {
+        if (Settings.canDrawOverlays(context)) {
+            FloatingPrompterService.start(context, script)
+            showNotification("Teleprompter flotante activado sobre la pantalla")
+        } else {
+            // Activate in-app floating window immediately and show permission prompt for system-wide overlay
+            _floatingScript.value = script
+            _pendingOverlayPermission.value = script
+        }
+    }
+
+    fun toggleInAppFloating(script: Script) {
+        if (_floatingScript.value?.id == script.id) {
+            _floatingScript.value = null
+        } else {
+            _floatingScript.value = script
+        }
+    }
+
+    fun closeInAppFloating() {
+        _floatingScript.value = null
     }
 
     fun showNotification(message: String, isError: Boolean = false) {
